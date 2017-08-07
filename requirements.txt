@@ -1,8 +1,10 @@
 certifi==2017.7.27.1
 chardet==3.0.4
+gunicorn==19.7.1
 idna==2.5
 praw==5.0.1
 prawcore==0.11.0
 requests==2.18.3
+spotipy==2.4.4
 update-checker==0.16
 urllib3==1.22

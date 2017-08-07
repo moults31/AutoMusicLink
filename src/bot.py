@@ -1,7 +1,8 @@
 import praw
 import os
 import pkg_resources
-
+import requests
+import spotipy
 
 # Return a list of reddit submission objects
 def getRedditPosts():
@@ -22,18 +23,44 @@ def getRedditPosts():
     for entry in subredditlist:
         subreddit = reddit.subreddit(str.strip(entry))
 
-        print(subreddit.display_name)  # Output: redditdev
-
         # Add this entry to output list.
         # @TODO Filter out non-music posts
         for submission in subreddit.hot(limit=10):
-            print(submission.title)  
             redditposts.append(submission)
             
     return redditposts
     
+
+# Return a valid Client Access Token for 
+# the Spotify Web API
+def getSpotifyAuth():
+    client_id = os.environ['SPOTIFY_APP_ID']
+    client_secret = os.environ['SPOTIFY_APP_SECRET']
+
+    grant_type = 'client_credentials'
+    body_params = {'grant_type' : grant_type}
+    url='https://accounts.spotify.com/api/token'
+
+    r = requests.post(url, data=body_params, auth = (client_id, client_secret)) 
+    t = r.json().get('access_token')
+    
+    return t
+
+
+# Return a track for each reddit post passed in
+def getSpotifyTracks(redditposts):
+    t = getSpotifyAuth()
+    sp = spotipy.Spotify(auth=t)
+    
+    for p in redditposts:
+        print(p.title)
+        tracks = sp.search(q=p.title, type='track')
+        
+        print(tracks)
+        print("\n\n")
+                   
                                     
 # Main
 
 redditposts = getRedditPosts()
-print(redditposts)
+getSpotifyTracks(redditposts)
