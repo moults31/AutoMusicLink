@@ -1,6 +1,9 @@
 import praw
 import os
 import pkg_resources
+import re
+import pprint
+import xml.etree.ElementTree as ET
 
 # Return a list of reddit submission objects
 def getPosts():
@@ -14,27 +17,34 @@ def getPosts():
                          password=os.environ['REDDIT_PASSWORD'])
         
     # Load list of subreddits to run in
-    listFile = pkg_resources.resource_filename(__name__, "../include/subredditlist.txt")
-    with open(listFile) as f:
-       subredditList = f.readlines()
+    listFile = pkg_resources.resource_filename(__name__, "../include/subredditlist.xml")
+    subredditList = ET.parse(listFile).getroot()
 
-    for entry in subredditList:
-        subreddit = reddit.subreddit(str.strip(entry))
+    for sub in subredditList.findall('subreddit'):
+        subreddit = reddit.subreddit(sub.find('name').text)
         
         # Add this entry to output list.
-        # @TODO Filter out non-music posts
-        for submission in subreddit.hot(limit=10):
-            posts.append(submission)
+        for submission in subreddit.new(limit=10):
+            # Filter out non-music posts
+            ignorepost = False
+            for flair in sub.find('ignoreflairs').findall('flair'):
+                if submission.link_flair_text == flair.text:
+                    ignorepost = True
+            
+            if ignorepost == False:
+                posts.append(submission)
     
     return posts
 
-# Return a list of submission titles modified to
-# include only song title and artist name
+# Return a list of submission titles processed
+# to include only song title and artist name
 def formatPostTitles(posts):
     formattedTitles = list()
     
     for p in posts:
         t = p.title
         formattedTitles.append(t)
+        print(p.title)
+        print(p.link_flair_text)
     
     return formattedTitles

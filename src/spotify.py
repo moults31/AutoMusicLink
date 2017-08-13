@@ -26,9 +26,9 @@ def getTracks(titles):
     tracks = list()
     
     for t in titles:
-        print(t)
+        #print(t)
         tracksearch = sp.search(q=t, type='track')
-        print(tracksearch)
+        #print(tracksearch)
 
         tracks.append(tracksearch)
 

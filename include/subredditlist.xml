@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<subredditlist>
+	<subreddit>
+		<name>posthardcore</name>
+		<ignoreflairs>
+			<flair>AMA Announcement</flair>
+			<flair>Verified AMA</flair>
+			<flair>Meta</flair>
+			<flair>Discussion</flair>
+		</ignoreflairs>
+	</subreddit>
+	<subreddit>
+		<name>metalcore</name>
+		<ignoreflairs>
+			<flair>AMA Announcement</flair>
+			<flair>Verified AMA</flair>
+			<flair>Meta</flair>
+			<flair>Discussion</flair>
+		</ignoreflairs>
+	</subreddit>
+</subredditlist>
