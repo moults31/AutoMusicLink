@@ -1,6 +1,7 @@
 # AutoMusicLink modules
 import reddit
 import spotify
+import urlshortener
 
 
 # Main
@@ -15,5 +16,7 @@ for post in redditposts:
         title = titles[post.id]
         url = tracks[post.id]
 
+        shortUrl = urlshortener.shortenUrl(url)
         print(title)
         print(url)
+        print(shortUrl)

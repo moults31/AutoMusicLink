@@ -3,7 +3,6 @@ import os
 import pkg_resources
 import re
 import xml.etree.ElementTree as ET
-import pprint
 
 # Return a list of reddit submission objects
 def getPosts():
