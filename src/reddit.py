@@ -2,7 +2,6 @@ import praw
 import os
 import pkg_resources
 import re
-import pprint
 import xml.etree.ElementTree as ET
 
 # Return a list of reddit submission objects
@@ -24,7 +23,7 @@ def getPosts():
         subreddit = reddit.subreddit(sub.find('name').text)
         
         # Add this entry to output list.
-        for submission in subreddit.new(limit=10):
+        for submission in subreddit.new(limit=50):
             # Filter out non-music posts
             ignorepost = False
             for flair in sub.find('ignoreflairs').findall('flair'):
@@ -43,8 +42,10 @@ def formatPostTitles(posts):
     
     for p in posts:
         t = p.title
-        formattedTitles.append(t)
-        print(p.title)
-        print(p.link_flair_text)
+        t = re.sub(r'^.*\.', '', t)
+        t = re.sub(r'[\(\[\{].*$','',t)
+
+        if re.search(r'-', t) != None:
+            formattedTitles.append(t)
     
     return formattedTitles

@@ -1,6 +1,3 @@
-# OSS modules
-
-
 # AutoMusicLink modules
 import reddit
 import spotify
