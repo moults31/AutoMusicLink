@@ -21,7 +21,7 @@ def getAuth():
 
 
 # Return a dictionary with a track url at each key passed in
-def getTracks(titles):
+def getTrackUrls(titles):
     token = getAuth()
     sp = spotipy.Spotify(auth=token)
     
