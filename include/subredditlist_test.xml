@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<subredditlist>
+	<subreddit>
+		<name>testingground4bots</name>
+		<ignoreflairs>
+			<flair>AMA Announcement</flair>
+			<flair>Verified AMA</flair>
+			<flair>Meta</flair>
+			<flair>Discussion</flair>
+			<flair>Cover</flair>
+		</ignoreflairs>
+	</subreddit>
+</subredditlist>

@@ -1,7 +1,6 @@
 import os
 from apiclient.discovery import build
 from oauth2client.client import GoogleCredentials
-import pprint
 
 # Get and return an Api instance using oauth
 def getServiceObject():
@@ -65,7 +64,7 @@ def getPrevLongUrls():
         data = {'projection':'ANALYTICS_CLICKS', 'start_token':token}
         request = service.url().list(**data)
         history = request.execute()
-        
+
         for item in history['items']:
             urls.append(item['longUrl'])
 

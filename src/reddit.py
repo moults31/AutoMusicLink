@@ -50,3 +50,7 @@ def formatPostTitles(posts):
             formattedTitles[p.id] = t
     
     return formattedTitles
+
+# Reply on a given Reddit post
+def addNewComment(post, comment):
+    post.reply(comment)

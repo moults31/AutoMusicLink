@@ -2,3 +2,5 @@ venv/*
 .env
 src/__pycache__/*
 src/cred/AutoMusicLinker-333e1c92c852.json
+src/debug.py
+include/subredditlist_test.xml

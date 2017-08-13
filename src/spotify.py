@@ -27,7 +27,6 @@ def getTrackUrls(titles):
     
     tracks = dict()
     
-    # Iterate over both titles and keys
     for k in titles:
         t = titles[k]
         
