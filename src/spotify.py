@@ -1,7 +1,6 @@
 import requests
 import spotipy
 import os
-import pprint
 import re
 from difflib import SequenceMatcher
 
@@ -21,16 +20,18 @@ def getAuth():
     return t
 
 
-# Return a track url for each reddit post passed in
+# Return a dictionary with a track url at each key passed in
 def getTracks(titles):
     token = getAuth()
     sp = spotipy.Spotify(auth=token)
     
-    tracks = list()
+    tracks = dict()
     
-    for t in titles:
+    # Iterate over both titles and keys
+    for k in titles:
+        t = titles[k]
+        
         tracksearch = sp.search(q=t, type='track')
-    
         items = tracksearch['tracks']['items']
         
         if not items:
@@ -38,7 +39,6 @@ def getTracks(titles):
         
         bestmatchrate = 0
         for item in items:
-            #if re.search(item['name'], t) != None:
             s1 = item['name'] + ' - ' + item['artists'][0]['name']
             matchrate1 = SequenceMatcher(None, t, s1).ratio()
             s2 = item['artists'][0]['name'] + ' - ' + item['name']
@@ -50,9 +50,6 @@ def getTracks(titles):
                 bestmatch = item
                 bestmatchrate = matchrate
             
-        tracks.append(bestmatch['external_urls']['spotify'])
-        
-        print(t)
-        print(bestmatch['name'])
+        tracks[k] = (bestmatch['external_urls']['spotify'])
 
     return tracks

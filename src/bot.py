@@ -3,10 +3,17 @@ import reddit
 import spotify
 
 
-                   
-                                    
 # Main
 
 redditposts = reddit.getPosts()
-tracktitles = reddit.formatPostTitles(redditposts)
-tracks = spotify.getTracks(tracktitles)
+titles = reddit.formatPostTitles(redditposts)
+
+tracks = spotify.getTracks(titles)
+
+for post in redditposts:
+    if post.id in tracks:
+        title = titles[post.id]
+        url = tracks[post.id]
+
+        print(title)
+        print(url)

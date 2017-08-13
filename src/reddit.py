@@ -3,6 +3,7 @@ import os
 import pkg_resources
 import re
 import xml.etree.ElementTree as ET
+import pprint
 
 # Return a list of reddit submission objects
 def getPosts():
@@ -35,10 +36,11 @@ def getPosts():
     
     return posts
 
-# Return a list of submission titles processed
-# to include only song title and artist name
+# Return a dict of submission titles processed
+# to include only song title and artist name.
+# Use post IDs as keys.
 def formatPostTitles(posts):
-    formattedTitles = list()
+    formattedTitles = dict()
     
     for p in posts:
         t = p.title
@@ -46,6 +48,6 @@ def formatPostTitles(posts):
         t = re.sub(r'[\(\[\{].*$','',t)
 
         if re.search(r'-', t) != None:
-            formattedTitles.append(t)
+            formattedTitles[p.id] = t
     
     return formattedTitles
