@@ -3,7 +3,6 @@ import reddit
 import spotify
 import urlshortener
 
-
 # Main
 
 text1 = '''Beep boop, I'm a bot.

@@ -3,6 +3,7 @@ import os
 import pkg_resources
 import re
 import xml.etree.ElementTree as ET
+import time
 
 # Return a list of reddit submission objects
 def getPosts():
@@ -54,3 +55,5 @@ def formatPostTitles(posts):
 # Reply on a given Reddit post
 def addNewComment(post, comment):
     post.reply(comment)
+    #Sleep for 9 minutes to appease reddit api rate limit
+    time.sleep(9*60)
