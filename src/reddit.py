@@ -55,5 +55,6 @@ def formatPostTitles(posts):
 # Reply on a given Reddit post
 def addNewComment(post, comment):
     post.reply(comment)
-    #Sleep for 9 minutes to appease reddit api rate limit
+    #Sleep for 9 minutes to appease reddit api rate limit gods
+    print('made a comment. sleeping')
     time.sleep(9*60)
