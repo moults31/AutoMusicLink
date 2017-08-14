@@ -11,6 +11,9 @@ def getServiceObject():
     
     data = ast.literal_eval(os.environ['GOOGLE_APPLICATION_CREDENTIALS_CONTENT'])
     filename = 'keyfile.json'
+    
+    if not os.path.exists(pathname):
+        os.mkdir(pathname)
 
     with open(os.path.join(pathname, filename), 'w') as outfile:
         json.dump(data, outfile)
