@@ -55,9 +55,8 @@ def formatPostTitles(posts):
 # Reply on a given Reddit post
 def addNewComment(post, comment):
     post.reply(comment)
-    #Sleep for 9 minutes to appease reddit api rate limit gods
-    print('made a comment. sleeping')
-    time.sleep(9*60)
+    #Sleep for 1 minute to appease reddit api rate limit gods
+    time.sleep(60)
 
 # Given a list of reddit posts, return all of those
 # which u/AutoMusicLink has not commented in

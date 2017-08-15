@@ -27,16 +27,6 @@ def getServiceObject():
     
     return service
 
-# Create and return a shortened url
-def shortenUrl(longUrl):
-    data = {'longUrl':longUrl}
-    service = getServiceObject()
-    
-    request = service.url().insert(body=data)
-    resp = request.execute()
-
-    return resp['id']
-
 # Return a list of all previously shortened url objects
 def getShortUrlObjs():
     urlObjs = list()
@@ -97,3 +87,21 @@ def getMostClickedUrlObj():
 
     pprint.pprint(mostClickedUrlObj)
     return mostClickedUrlObj
+
+# Create and return a shortened url. If we have already shortened the passed-in
+# longUrl, return the shortUrl we made previously.
+def shortenUrl(longUrl):
+    # Check if longUrl is in our url shortener history,
+    # and return the corresponding shortUrl if so
+    urlObjs = getShortUrlObjs()
+    for obj in urlObjs:
+        if obj['longUrl'] == longUrl:
+            return obj['id']
+
+    # longUrl wasn't in our history. Create a new shortUrl for it
+    data = {'longUrl':longUrl}
+    service = getServiceObject()
+    request = service.url().insert(body=data)
+    resp = request.execute()
+    
+    return resp['id']
