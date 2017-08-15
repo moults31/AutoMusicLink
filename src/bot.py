@@ -16,7 +16,7 @@ text3 = ''')
     
 ^^made ^^by ^^/u/moults31, ^^more ^^info: ^^[README](https://github.com/moults31/AutoMusicLink)'''
 
-redditposts = reddit.getPosts()
+redditposts = reddit.getPostsNotCommentedIn(reddit.getPosts())
 titles = reddit.formatPostTitles(redditposts)
 
 newUrls = spotify.getTrackUrls(titles)

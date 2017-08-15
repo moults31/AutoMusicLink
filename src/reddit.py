@@ -58,3 +58,22 @@ def addNewComment(post, comment):
     #Sleep for 9 minutes to appease reddit api rate limit gods
     print('made a comment. sleeping')
     time.sleep(9*60)
+
+# Given a list of reddit posts, return all of those
+# which u/AutoMusicLink has not commented in
+def getPostsNotCommentedIn(posts):
+    postsNotCommentedIn = list()
+
+    for p in posts:
+        shouldAdd = True
+        
+        p.comments.replace_more(limit=0)
+        for top_level_comment in p.comments:
+            if top_level_comment.author == 'AutoMusicLink':
+                shouldAdd = False
+                break
+
+        if shouldAdd == True:
+            postsNotCommentedIn.append(p)
+    
+    return postsNotCommentedIn
