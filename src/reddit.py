@@ -17,14 +17,14 @@ def getPosts():
                          password=os.environ['REDDIT_PASSWORD'])
         
     # Load list of subreddits to run in
-    listFile = pkg_resources.resource_filename(__name__, "../include/subredditlist.xml")
+    listFile = pkg_resources.resource_filename(__name__, "../include/subredditlist_test.xml")
     subredditList = ET.parse(listFile).getroot()
 
     for sub in subredditList.findall('subreddit'):
         subreddit = reddit.subreddit(sub.find('name').text)
         
         # Add this entry to output list.
-        for submission in subreddit.new(limit=10):
+        for submission in subreddit.new(limit=20):
             # Filter out non-music posts
             ignorepost = False
             for flair in sub.find('ignoreflairs').findall('flair'):

@@ -2,14 +2,17 @@
 import reddit
 import spotify
 import urlshortener
+import gmusic
 
+
+#########################################################
 # Main
 
-text1 = '''Spotify link: ['''
-text2 = ''']('''
-text3 = ''')
+text1 = '''
+    
+'''
 
-Beep boop, I'm a bot.
+text2 = '''Beep boop, I'm a bot.
 
 I generate links to streaming services so you can add
 songs to your queue and move on with your day!
@@ -20,17 +23,47 @@ songs to your queue and move on with your day!
 redditposts = reddit.getPostsNotCommentedIn(reddit.getPosts())
 titles = reddit.formatPostTitles(redditposts)
 
-trackUrls = spotify.getTrackUrls(titles)
+trackUrls_sp = spotify.getTrackUrls(titles)
+trackUrls_gm = gmusic.getTrackUrls(titles)
 
 postNum = 0
 for post in redditposts:
-    if post.id in trackUrls:
+    if post.id in titles:
         title = titles[post.id]
-        url = trackUrls[post.id]
+    else:
+        continue
+    
+    if (post.id not in trackUrls_sp) and (post.id not in trackUrls_gm):
+        continue
+    
+    if post.id in trackUrls_sp:
+        url_sp = trackUrls_sp[post.id]
+        shortUrl_sp = urlshortener.shortenUrl(url_sp)
 
-        shortUrl = urlshortener.shortenUrl(url)
+        text_sp = '[Spotify](' + shortUrl_sp + ''')
+            
+'''
+    else:
+        text_sp = '''Not found on Spotify
+            
+'''
+    
+    if post.id in trackUrls_gm:
+        url_gm = trackUrls_gm[post.id]
+        shortUrl_gm = urlshortener.shortenUrl(url_gm)
 
-        postNum = postNum + 1
-        print('Commenting on post ' + str(postNum) + ' of ' + str(len(trackUrls)))
-        commentBody = text1 + title + text2 + shortUrl + text3
-        reddit.addNewComment(post, commentBody)
+        text_gm = '[Google Play Music](' + shortUrl_gm + ''')
+    
+'''
+
+    else:
+        text_gm = '''Not found on Google Play Music
+            
+'''
+    
+    postNum = postNum + 1
+
+    commentBody = title + text1 + text_sp + text_gm + text2
+    reddit.addNewComment(post, commentBody)
+
+print('Commented on ' + str(postNum) + ' posts')
