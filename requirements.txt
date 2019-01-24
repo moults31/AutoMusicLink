@@ -2,8 +2,11 @@ appdirs==1.4.3
 beautifulsoup4==4.6.3
 cachetools==2.0.1
 certifi==2017.7.27.1
+cffi==1.11.5
 chardet==3.0.4
+cryptography==1.7.2
 decorator==4.3.0
+enum34==1.1.6
 funcsigs==1.0.2
 future==0.16.0
 gmusicapi==11.0.1
@@ -13,6 +16,7 @@ gpsoauth==0.4.1
 gunicorn==19.7.1
 httplib2==0.10.3
 idna==2.5
+ipaddress==1.0.22
 lxml==4.2.4
 MechanicalSoup==0.10.0
 mock==2.0.0
@@ -25,12 +29,15 @@ proboscis==1.2.6.0
 protobuf==3.6.1
 pyasn1==0.3.2
 pyasn1-modules==0.0.11
+pycparser==2.19
 pycryptodomex==3.6.5
+PyJWT==1.7.1
 python-dateutil==2.7.3
 requests==2.18.3
 rsa==3.4.2
 six==1.10.0
 spotipy==2.4.4
+typing==3.5.3.0
 update-checker==0.16
 uritemplate==3.0.0
 urllib3==1.22

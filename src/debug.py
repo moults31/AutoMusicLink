@@ -3,7 +3,9 @@ import reddit
 import spotify
 import urlshortener
 import gmusic
+import applemusic
 
 # Call methods from here to test them
-urlshortener.getTotalClicks()
-urlshortener.getMostClickedUrlObj()
+am = applemusic.AppleMusic()
+
+am.sample_code()
