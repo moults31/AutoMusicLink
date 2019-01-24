@@ -5,3 +5,5 @@ src/cred/AutoMusicLinker-333e1c92c852.json
 src/cred/keyfile.json
 include/subredditlist_test.xml
 include/subredditlist_2.xml
+.vscode
+*.pyc

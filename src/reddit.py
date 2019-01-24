@@ -24,7 +24,7 @@ def getPosts():
         subreddit = reddit.subreddit(sub.find('name').text)
         
         # Add this entry to output list.
-        for submission in subreddit.new(limit=20):
+        for submission in subreddit.new(limit=5):
             # Filter out non-music posts
             ignorepost = False
             for flair in sub.find('ignoreflairs').findall('flair'):

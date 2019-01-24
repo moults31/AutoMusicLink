@@ -40,7 +40,6 @@ songs to your queue and move on with your day!
     titles = reddit.formatPostTitles(redditposts)
 
     trackUrls_sp = spotify.getTrackUrls(titles)
-    trackUrls_gm = gmusic.getTrackUrls(titles)
 
     postNum = 0
     for post in redditposts:
@@ -49,15 +48,14 @@ songs to your queue and move on with your day!
         else:
             continue
     
-        if (post.id not in trackUrls_sp) and (post.id not in trackUrls_gm):
+        if (post.id not in trackUrls_sp):
             continue
     
         text_sp = getTextForStreamingService(trackUrls_sp, post.id, 'Spotify')
-        text_gm = getTextForStreamingService(trackUrls_gm, post.id, 'Google Play Music')
     
         postNum = postNum + 1
 
-        commentBody = text1 + title + text2 + text_sp + text_gm + text3
+        commentBody = text1 + title + text2 + text_sp + text3
         reddit.addNewComment(post, commentBody)
 
     print('Commented on ' + str(postNum) + ' posts')
