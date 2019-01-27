@@ -4,6 +4,7 @@ import requests
 import webbrowser
 import time
 import json
+from difflib import SequenceMatcher
 
 import sys
 sys.path.append('src/apple-py-music')
@@ -38,9 +39,11 @@ class AppleMusic():
         self.playlist_ids = {}
         self.populate_playlist_ids()
 
+
     def sample_code(self):
         resp = self.client.get_songs_by_isrc('US2U61726301')
         pprint.pprint(resp)
+
 
     def populate_playlist_ids(self):
         offset = 0
@@ -59,14 +62,56 @@ class AppleMusic():
                     # Skip over playlist names that python string can't handle
                     continue
 
+
     def get_playlist_ids(self):
         return self.playlist_ids
 
-    def user_playlist_add_tracks(self, id, track_ids):
-        p = self.client.user_playlist(id, include='tracks')
-        pprint.pprint(p)
-        
-        self.client.user_playlist_add_tracks(id, track_ids)
 
-        p = self.client.user_playlist(id)
-        pprint.pprint(p)
+    def user_playlist_add_tracks(self, id, track_ids):       
+        self.client.user_playlist_add_tracks(id, track_ids)
+    
+
+    def user_playlist_delete_all_tracks(self, id):
+        # Returns 403
+        resp = self.user_playlist_get_all_tracks(id)
+
+        for track in resp['data']:
+            pprint.pprint(track)
+            self.client.user_playlist_remove_track(id, track['id'])
+
+
+    def user_playlist_get_all_tracks(self, id):
+        return self.client.user_playlist(id, include='tracks')
+
+    # Return a dictionary with a track url at each key passed in
+    # "Titles" param is a dictionary with titles as values.
+    def getTrackIdsFromTitles(self, titles):        
+        tracks = list()
+        
+        for k in titles:
+            t = titles[k]
+            
+            tracksearch = self.client.search(query=t)
+            
+            # pprint.pprint(tracksearch)
+            try:
+                items = tracksearch['results']['songs']['data']
+            except KeyError:
+                continue
+            
+            bestmatchrate = 0
+            for item in items:
+                s1 = item['attributes']['name'] + ' - ' + item['attributes']['artistName']
+                matchrate1 = SequenceMatcher(None, t, s1).ratio()
+                s2 = item['attributes']['artistName'] + ' - ' + item['attributes']['name']
+                matchrate2 = SequenceMatcher(None, t, s2).ratio()
+                
+                matchrate = max(matchrate1,matchrate2)
+                
+                if matchrate > bestmatchrate:
+                    bestmatch = item
+                    bestmatchrate = matchrate
+                
+            tracks.append(bestmatch['id'])
+
+        return tracks

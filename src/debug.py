@@ -15,17 +15,30 @@ import json
 
 # Call methods from here to test them
 am = applemusic.AppleMusic()
+r = reddit.reddit()
 
 playlist_ids = am.get_playlist_ids()
 
-subreddit_names = reddit.getSubredditNames()
 
-track_ids = []
-track_ids.append('1334804732')
 
-for name in subreddit_names:
+# for k in playlist_ids:
+#     print(am.user_playlist_get_all_tracks(playlist_ids[k]))
+#     am.user_playlist_delete_all_tracks(playlist_ids[k])
+#     print(am.user_playlist_get_all_tracks(playlist_ids[k]))
+
+subreddit_names = r.getSubredditNames()
+
+for sub_name in subreddit_names:
+    playlist_name = 'r/' + sub_name
+
+    posts = r.getPostsInSub(sub_name)
+
+    track_ids_to_add = am.getTrackIdsFromTitles(posts)
+
     try:
-        print("Adding track to %s" % name)
-        am.user_playlist_add_tracks(playlist_ids['r/' + name], track_ids)
+        print("Adding tracks to %s" % playlist_name)
+        am.user_playlist_add_tracks(playlist_ids[playlist_name], track_ids_to_add)
     except KeyError:
-        print("E: Playlist %s not found" % name)
+        print("E: Playlist %s not found" % playlist_name)
+
+print("done debug.py")
