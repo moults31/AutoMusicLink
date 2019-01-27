@@ -1,3 +1,6 @@
 [submodule "src/apple-py-music"]
 	path = src/apple-py-music
 	url = https://github.com/moults31/apple-py-music.git
+[submodule "src/apple-musickit-example"]
+	path = src/apple-musickit-example
+	url = https://github.com/moults31/apple-musickit-example.git
