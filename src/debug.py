@@ -9,15 +9,23 @@ import applemusic
 import os
 import requests
 import webbrowser
+import time
+import json
+
 
 os.environ['NO_PROXY'] = '127.0.0.1'
+webbrowser.open_new('http://127.0.0.1:5000')
 
-webbrowser.open_new('http://127.0.0.1:8080')
+time.sleep(1)
 
-r = requests.get('http://127.0.0.1:8080/usertoken')
-print(r.content)
+r = requests.get('http://127.0.0.1:5000/usertoken')
 
-# requests.put('http://127.0.0.1:8080/exit')
+while "Not initialized" in r.content:
+    r = requests.get('http://127.0.0.1:5000/usertoken')
+
+resp_json = json.loads(r.content)
+print(resp_json['usertoken'])
+
 
 # Call methods from here to test them
 # am = applemusic.AppleMusic()
