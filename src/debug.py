@@ -4,6 +4,7 @@ import spotify
 import urlshortener
 import gmusic
 import applemusic
+import pprint
 
 # testing socket
 import os
@@ -12,22 +13,19 @@ import webbrowser
 import time
 import json
 
-
-os.environ['NO_PROXY'] = '127.0.0.1'
-webbrowser.open_new('http://127.0.0.1:5000')
-
-time.sleep(1)
-
-r = requests.get('http://127.0.0.1:5000/usertoken')
-
-while "Not initialized" in r.content:
-    r = requests.get('http://127.0.0.1:5000/usertoken')
-
-resp_json = json.loads(r.content)
-print(resp_json['usertoken'])
-
-
 # Call methods from here to test them
-# am = applemusic.AppleMusic()
+am = applemusic.AppleMusic()
 
-# am.get_user_playlist()
+playlist_ids = am.get_playlist_ids()
+
+subreddit_names = reddit.getSubredditNames()
+
+track_ids = []
+track_ids.append('1334804732')
+
+for name in subreddit_names:
+    try:
+        print("Adding track to %s" % name)
+        am.user_playlist_add_tracks(playlist_ids['r/' + name], track_ids)
+    except KeyError:
+        print("E: Playlist %s not found" % name)

@@ -76,3 +76,16 @@ def getPostsNotCommentedIn(posts):
             postsNotCommentedIn.append(p)
     
     return postsNotCommentedIn
+
+def getSubredditNames():
+    # Declare empty list of subreddits
+    names = []
+
+    # Load list of names
+    listFile = pkg_resources.resource_filename(__name__, "../include/subredditlist.xml")
+    subredditList = ET.parse(listFile).getroot()
+
+    for sub in subredditList.findall('subreddit'):
+        names.append(sub.find('name').text)
+
+    return names
