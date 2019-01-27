@@ -20,4 +20,25 @@
 			<flair>Cover</flair>
 		</ignoreflairs>
 	</subreddit>
+	<subreddit>
+		<name>mathrock</name>
+		<ignoreflairs>
+		</ignoreflairs>
+	</subreddit>
+	<subreddit>
+		<name>indieheads</name>
+		<ignoreflairs>
+		</ignoreflairs>
+	</subreddit>
+	<subreddit>
+		<name>music</name>
+		<acceptflairs>
+			<flair>music streaming</flair>
+		</acceptflairs>
+	</subreddit>
+	<subreddit>
+		<name>alternativerock</name>
+		<ignoreflairs>
+		</ignoreflairs>
+	</subreddit>
 </subredditlist>

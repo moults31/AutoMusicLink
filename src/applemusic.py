@@ -13,6 +13,8 @@ from applepymusic import AppleMusicClient
 
 class AppleMusic():
     def __init__(self):
+        print("Starting apple music...")
+
         # Step 1: Start JS server to generate music user token
         os.environ['NO_PROXY'] = '127.0.0.1'
         webbrowser.open_new('http://127.0.0.1:5000')
@@ -38,6 +40,8 @@ class AppleMusic():
         #           value: playlist id
         self.playlist_ids = {}
         self.populate_playlist_ids()
+
+        print("Apple music started.")
 
 
     def sample_code(self):

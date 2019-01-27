@@ -4,6 +4,7 @@ import pkg_resources
 import re
 import xml.etree.ElementTree as ET
 import time
+import pprint
 
 # Return a list of reddit submission objects
 class reddit():
@@ -26,19 +27,42 @@ class reddit():
             posts = []
 
             # Add this entry to output list.
-            for submission in subreddit.new(limit=10):
-
+            for submission in subreddit.hot(limit=200):
                 # Filter out non-music posts
-                ignorepost = False
-                for flair in sub.find('ignoreflairs').findall('flair'):
-                    if submission.link_flair_text == flair.text:
-                        ignorepost = True
-                
+                ignorepost = self.shouldIgnorePost(sub, submission)
+
                 if ignorepost == False:
                     posts.append(submission)
+                    if len(posts) >= 50:
+                        break
             
             formatted_posts = self.formatPostTitles(posts)
             self.postsinsubs[sub.find('name').text] = formatted_posts
+
+    def shouldIgnorePost(self, sub, submission):
+        ignorepost = False
+
+        # First check if we should ignore based on flairs
+        try:
+            # For some subs we want to ignore posts with certain flairs
+            for flair in sub.find('ignoreflairs').findall('flair'):
+                if submission.link_flair_text == flair.text:
+                    ignorepost = True
+        except:
+            # For others we only accept posts with certain flairs
+            for flair in sub.find('acceptflairs').findall('flair'):
+                if submission.link_flair_text == flair.text:
+                    ignorepost = False
+                else:
+                    ignorepost = True
+
+        if ignorepost == False:
+            # Now catch special cases for specific subreddits
+            if sub.find('name').text == "indieheads":
+                if "FRESH" in submission.title:
+                    ignorepost = False
+
+        return ignorepost
 
     # Return a list of reddit submission objects
     def getPostsInSub(self, subname):
@@ -55,8 +79,13 @@ class reddit():
         
         for p in posts:
             t = p.title
+            
+            # Eliminate sentences ending in a period
             t = re.sub(r'^.*\.', '', t)
-            t = re.sub(r'[\(\[\{].*$','',t)
+            # Eliminate anything within brackets
+            t = re.sub(r'\(.*\)','',t)
+            t = re.sub(r'\[.*\]','',t)
+            t = re.sub(r'\{.*\}','',t)
 
             if re.search(r'-', t) != None:
                 formattedTitles[p.id] = t
