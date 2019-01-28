@@ -15,7 +15,7 @@ class reddit():
                             username=os.environ['REDDIT_USERNAME'],
                             password=os.environ['REDDIT_PASSWORD'])
 
-        listFile = pkg_resources.resource_filename(__name__, "../include/subredditlist.xml")
+        listFile = pkg_resources.resource_filename(__name__, "../include/subredditlist_2.xml")
         self.subredditList = ET.parse(listFile).getroot()
 
         self.postsinsubs = {}

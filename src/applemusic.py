@@ -17,14 +17,14 @@ class AppleMusic():
 
         # Step 1: Start JS server to generate music user token
         os.environ['NO_PROXY'] = '127.0.0.1'
-        webbrowser.open_new('http://127.0.0.1:5000')
+        webbrowser.open_new('http://127.0.0.1:8080')
 
         time.sleep(1)
 
-        r = requests.get('http://127.0.0.1:5000/usertoken')
+        r = requests.get('http://127.0.0.1:8080/usertoken')
 
         while "Not initialized" in r.content:
-            r = requests.get('http://127.0.0.1:5000/usertoken')
+            r = requests.get('http://127.0.0.1:8080/usertoken')
 
         am_usertoken = json.loads(r.content)['usertoken']
 

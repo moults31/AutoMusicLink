@@ -1,4 +1,4 @@
 cd src/apple-musickit-example/
 node server.js &
 cd ../..
-python src/debug.py
+python -u src/refresh_playlists.py
