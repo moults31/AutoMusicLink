@@ -26,6 +26,8 @@ class reddit():
             subreddit = self.client.subreddit(sub.find('name').text)
             posts = []
 
+            print("Fetching music submissions in r/" + sub.find('name').text)
+
             # Add this entry to output list.
             for submission in subreddit.hot(limit=200):
                 # Filter out non-music posts
@@ -38,6 +40,10 @@ class reddit():
             
             formatted_posts = self.formatPostTitles(posts)
             self.postsinsubs[sub.find('name').text] = formatted_posts
+
+            print("Found %i valid submissions" % len(formatted_posts))
+
+        print("Done fetching music submissions")
 
     def shouldIgnorePost(self, sub, submission):
         ignorepost = False
