@@ -23,5 +23,7 @@ with open(".env") as configfile:
         os.environ[name] = bytes(str(var).strip())
 
 s = spotify.spotify()
+# s.getUserPlaylists()
+s.addToUserPlaylist()
 
 print("done debug.py")

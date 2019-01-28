@@ -8,28 +8,21 @@ from difflib import SequenceMatcher
 
 class spotify():
     def __init__(self):
-        client_id = os.environ['SPOTIFY_APP_ID']
+        self.client_id = os.environ['SPOTIFY_APP_ID']
         client_secret = os.environ['SPOTIFY_APP_SECRET']
         response_type = 'code'
         redirect_uri = 'https://github.com/moults31/AutoMusicLink'
-        scope = 'playlist-modify-public user-read-email'
-        username = 'moults31@gmail.com'
+        scope = 'playlist-modify-public user-read-email user-read-private'
+        self.username = 'Zac Moulton'
+        self.user_id = os.environ['SPOTIFY_USER_ID']
 
-        # body_params = { 'client_id' : client_id,
-        #                 'response_type' : response_type,
-        #                 'redirect_uri' : redirect_uri,
-        #                 'scopes' : scopes
-        #                 }
+        token = util.prompt_for_user_token(self.username, scope, self.client_id, client_secret, redirect_uri)
 
-        # url = 'https://accounts.spotify.com/authorize'
-        # r = requests.get(url, data=body_params)
+        if token:
+            self.sp = spotipy.Spotify(auth=token)
+        else:
+            print "Can't get token for", self.username
 
-        token = util.prompt_for_user_token(username, scope, client_id, client_secret, redirect_uri)
-        print(token)
-
-        # print(r.url)
-
-        # self.token = self.getToken()
 
 
     # Return a valid Client Access Token for
@@ -80,3 +73,28 @@ class spotify():
             tracks[k] = (bestmatch['external_urls']['spotify'])
 
         return tracks
+
+    def show_tracks(self, tracks):
+        for i, item in enumerate(tracks['items']):
+            track = item['track']
+            print "   %d %32.32s %s" % (i, track['artists'][0]['name'],
+                track['name'])
+
+    def getUserPlaylists(self):
+        playlists = self.sp.user_playlists(self.user_id)
+        for playlist in playlists['items']:
+            if playlist['owner']['id'] == self.user_id:
+                print
+                print playlist['name']
+                print '  total tracks', playlist['tracks']['total']
+                results = self.sp.user_playlist(self.user_id, playlist['id'],
+                    fields="tracks,next")
+                tracks = results['tracks']
+                self.show_tracks(tracks)
+                while tracks['next']:
+                    tracks = self.sp.next(tracks)
+                    self.show_tracks(tracks)
+
+    def addToUserPlaylist(self):
+        results = self.sp.user_playlist_add_tracks(self.user_id, '6ELsFo9tOnFkapX7U1e3BG', ['1j6xOGusnyXq3l6IryKF3G'])
+        print results

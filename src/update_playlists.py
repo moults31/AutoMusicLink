@@ -27,4 +27,4 @@ for sub_name in subreddit_names:
     except KeyError:
         print("E: Playlist %s not found" % playlist_name)
 
-print("done refresh_playlists.py")
+print("done update_playlists.py")
