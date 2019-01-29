@@ -15,7 +15,7 @@ class reddit():
                             username=os.environ['REDDIT_USERNAME'],
                             password=os.environ['REDDIT_PASSWORD'])
 
-        listFile = pkg_resources.resource_filename(__name__, "../include/subredditlist.xml")
+        listFile = pkg_resources.resource_filename(__name__, "../include/subredditlist_2.xml")
         self.subredditList = ET.parse(listFile).getroot()
 
         self.postsinsubs = {}
@@ -65,6 +65,10 @@ class reddit():
         if ignorepost == False:
             # Now catch special cases for specific subreddits
             if sub.find('name').text == "indieheads":
+                if "FRESH" in submission.title:
+                    ignorepost = False
+                    
+            if sub.find('name').text == "hiphopheads":
                 if "FRESH" in submission.title:
                     ignorepost = False
 

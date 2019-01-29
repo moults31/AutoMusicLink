@@ -46,4 +46,19 @@
 		<ignoreflairs>
 		</ignoreflairs>
 	</subreddit>
+	<subreddit>
+		<name>poppunkers</name>
+		<ignoreflairs>
+			<flair>AMA Announcement</flair>
+			<flair>Verified AMA</flair>
+			<flair>Meta</flair>
+			<flair>Discussion</flair>
+			<flair>Cover</flair>
+		</ignoreflairs>
+	</subreddit>
+		<subreddit>
+		<name>listentothis</name>
+		<ignoreflairs>
+		</ignoreflairs>
+	</subreddit>
 </subredditlist>
