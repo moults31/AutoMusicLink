@@ -8,6 +8,9 @@ from difflib import SequenceMatcher
 
 class spotify():
     def __init__(self):
+        print('Starting Spotify...')
+
+        # Step 1: Get Spotify user auth token for necessary scopes
         self.client_id = os.environ['SPOTIFY_APP_ID']
         client_secret = os.environ['SPOTIFY_APP_SECRET']
         response_type = 'code'
@@ -20,38 +23,39 @@ class spotify():
 
         if token:
             self.sp = spotipy.Spotify(auth=token)
+
+            # Step 2: Populate playlist id dictionary member
+            #           key: playlist name
+            #           value: playlist id
+            self.playlist_ids = {}
+            self.populate_playlist_ids()
+
+            print ("Spotify started.")
+
         else:
-            print "Can't get token for", self.username
+            print("Spotify initialization failed. Could not get token.")
 
 
-
-    # Return a valid Client Access Token for
-    # the Spotify Web API
-    def getToken(self):
-        client_id = os.environ['SPOTIFY_APP_ID']
-        client_secret = os.environ['SPOTIFY_APP_SECRET']
-        
-        grant_type = 'client_credentials'
-        body_params = {'grant_type' : grant_type}
-        url='https://accounts.spotify.com/api/token'
-        
-        r = requests.post(url, data=body_params, auth = (client_id, client_secret))
-        t = r.json().get('access_token')
-        
-        return t
+    def populate_playlist_ids(self):
+        playlists = self.sp.user_playlists(self.user_id)
+        for playlist in playlists['items']:
+            try:
+                if 'r/' in playlist['name']:
+                    self.playlist_ids[playlist['name']] = playlist['id']
+            except:
+                # Skip over playlist names that python string can't handle
+                continue
 
 
-    # Return a dictionary with a track url at each key passed in
-    def getTrackUrls(self, titles):
-        token = getAuth()
-        sp = spotipy.Spotify(auth=token)
-        
-        tracks = dict()
+    # Searches for each title in the "titles" list param. 
+    # Returns a list of ids containing all that were found.
+    def getTrackIdsFromTitles(self, titles):
+        tracks = list()
         
         for k in titles:
             t = titles[k]
             
-            tracksearch = sp.search(q=t, type='track')
+            tracksearch = self.sp.search(q=t, type='track')
             items = tracksearch['tracks']['items']
             
             if not items:
@@ -70,31 +74,22 @@ class spotify():
                     bestmatch = item
                     bestmatchrate = matchrate
                 
-            tracks[k] = (bestmatch['external_urls']['spotify'])
+            tracks.append((bestmatch['external_urls']['spotify']))
 
         return tracks
+        
 
-    def show_tracks(self, tracks):
-        for i, item in enumerate(tracks['items']):
-            track = item['track']
-            print "   %d %32.32s %s" % (i, track['artists'][0]['name'],
-                track['name'])
+    def get_playlist_ids(self):
+        return self.playlist_ids
 
-    def getUserPlaylists(self):
-        playlists = self.sp.user_playlists(self.user_id)
-        for playlist in playlists['items']:
-            if playlist['owner']['id'] == self.user_id:
-                print
-                print playlist['name']
-                print '  total tracks', playlist['tracks']['total']
-                results = self.sp.user_playlist(self.user_id, playlist['id'],
-                    fields="tracks,next")
-                tracks = results['tracks']
-                self.show_tracks(tracks)
-                while tracks['next']:
-                    tracks = self.sp.next(tracks)
-                    self.show_tracks(tracks)
 
-    def addToUserPlaylist(self):
-        results = self.sp.user_playlist_add_tracks(self.user_id, '6ELsFo9tOnFkapX7U1e3BG', ['1j6xOGusnyXq3l6IryKF3G'])
-        print results
+    def user_playlist_add_tracks(self, playlist_id, tracks):
+        self.sp.user_playlist_add_tracks(self.user_id, playlist_id, tracks)
+
+
+    def removeTrackFromUserPlaylist(self, playlist_id, track):
+        self.sp.user_playlist_remove_all_occurrences_of_tracks(self.user_id, playlist_id, tracks)
+
+    def user_playlist_replace_tracks(self, playlist_id, tracks):
+        self.sp.user_playlist_replace_tracks(self.user_id, playlist_id, tracks)
+

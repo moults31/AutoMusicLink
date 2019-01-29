@@ -55,7 +55,6 @@ class AppleMusic():
 
         while resp['data']:
             resp = self.client.user_playlists(limit=20,offset=offset)
-            # pprint.pprint(resp)
             offset = offset + 20
             
             for playlist in resp['data']:
@@ -87,8 +86,8 @@ class AppleMusic():
     def user_playlist_get_all_tracks(self, id):
         return self.client.user_playlist(id, include='tracks')
 
-    # Return a dictionary with a track url at each key passed in
-    # "Titles" param is a dictionary with titles as values.
+    # Searches for each title in the "titles" list param. 
+    # Returns a list of ids containing all that were found.
     def getTrackIdsFromTitles(self, titles):        
         tracks = list()
         
