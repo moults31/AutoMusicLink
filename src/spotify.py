@@ -9,6 +9,7 @@ from difflib import SequenceMatcher
 class spotify():
     def __init__(self):
         print('Starting Spotify...')
+        self.name = "spotify"
 
         # Step 1: Get Spotify user auth token for necessary scopes
         self.client_id = os.environ['SPOTIFY_APP_ID']
@@ -77,6 +78,29 @@ class spotify():
             tracks.append((bestmatch['external_urls']['spotify']))
 
         return tracks
+
+    def getTrackIdFromTitle(self, t):        
+        tracksearch = self.sp.search(q=t)
+        items = tracksearch['tracks']['items']
+        
+        if not items:
+            return ""
+        
+        bestmatchrate = 0
+        for item in items:
+            s1 = item['name'] + ' - ' + item['artists'][0]['name']
+            matchrate1 = SequenceMatcher(None, t, s1).ratio()
+            s2 = item['artists'][0]['name'] + ' - ' + item['name']
+            matchrate2 = SequenceMatcher(None, t, s2).ratio()
+            
+            matchrate = max(matchrate1,matchrate2)
+            
+            if matchrate > bestmatchrate:
+                bestmatch = item
+                bestmatchrate = matchrate
+            
+        return bestmatch['id']
+            
         
 
     def get_playlist_ids(self):

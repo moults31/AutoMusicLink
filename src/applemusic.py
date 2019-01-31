@@ -14,6 +14,7 @@ from applepymusic import AppleMusicClient
 class AppleMusic():
     def __init__(self):
         print("Starting apple music...")
+        self.name = "applemusic"
 
         # Step 1: Start JS server to generate music user token
         os.environ['NO_PROXY'] = '127.0.0.1'
@@ -70,6 +71,12 @@ class AppleMusic():
         return self.playlist_ids
 
 
+    # Apple is a bad guy and has removed the capability to delete tracks ever.
+    # Expose this one as replace and be ready to manually remove tracks before running any calling scripts :( wow
+    def user_playlist_replace_tracks(self, id, track_ids):       
+        self.client.user_playlist_add_tracks(id, track_ids)
+
+
     def user_playlist_add_tracks(self, id, track_ids):       
         self.client.user_playlist_add_tracks(id, track_ids)
     
@@ -86,6 +93,7 @@ class AppleMusic():
     def user_playlist_get_all_tracks(self, id):
         return self.client.user_playlist(id, include='tracks')
 
+
     # Searches for each title in the "titles" list param. 
     # Returns a list of ids containing all that were found.
     def getTrackIdsFromTitles(self, titles):        
@@ -96,7 +104,6 @@ class AppleMusic():
             
             tracksearch = self.client.search(query=t)
             
-            # pprint.pprint(tracksearch)
             try:
                 items = tracksearch['results']['songs']['data']
             except KeyError:
@@ -118,3 +125,26 @@ class AppleMusic():
             tracks.append(bestmatch['id'])
 
         return tracks
+
+    def getTrackIdFromTitle(self, t):        
+        tracksearch = self.client.search(query=t)
+        
+        try:
+            items = tracksearch['results']['songs']['data']
+        except KeyError:
+            return ""
+        
+        bestmatchrate = 0
+        for item in items:
+            s1 = item['attributes']['name'] + ' - ' + item['attributes']['artistName']
+            matchrate1 = SequenceMatcher(None, t, s1).ratio()
+            s2 = item['attributes']['artistName'] + ' - ' + item['attributes']['name']
+            matchrate2 = SequenceMatcher(None, t, s2).ratio()
+            
+            matchrate = max(matchrate1,matchrate2)
+            
+            if matchrate > bestmatchrate:
+                bestmatch = item
+                bestmatchrate = matchrate
+            
+        return bestmatch['id']
