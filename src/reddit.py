@@ -1,4 +1,5 @@
 # reddit.py dependencies
+from __future__ import print_function
 import praw
 import os
 import pkg_resources
@@ -6,6 +7,7 @@ import re
 import xml.etree.ElementTree as ET
 import time
 import pprint
+import sys
 
 # services
 import applemusic
@@ -22,7 +24,7 @@ class reddit():
                             username=os.environ['REDDIT_USERNAME'],
                             password=os.environ['REDDIT_PASSWORD'])
 
-        listFile = pkg_resources.resource_filename(__name__, "../include/subredditlist_2.xml")
+        listFile = pkg_resources.resource_filename(__name__, "../include/subredditlist.xml")
         self.subredditList = ET.parse(listFile).getroot()
 
         # dictionary with key=sub and key="title-artist" and value=(dict(key=service, value=id))
@@ -73,6 +75,10 @@ class reddit():
                             self.tracksinsubs[formatted_title] = dict()
                             self.tracksinsubs[formatted_title]["reddit"] = submission.id
 
+                        # Show some output for the user
+                        print('.', end='')
+                        sys.stdout.flush()
+
                         # Find the track corresponding to this post in our services
                         for service in self.services:
                             # Search for the track on the given service
@@ -92,9 +98,9 @@ class reddit():
             
             # Add all the tracks we found to the playlists in each service
             for service in self.services:
-                service.user_playlist_replace_tracks(service.get_playlist_ids[sub_name], track_ids[service])
-
-            print("Found %i valid submissions" % len(formatted_posts))
+                service.user_playlist_replace_tracks(service.get_playlist_ids()[sub_name], track_ids[service])
+                print("Added %i submissions to %s" % (len(track_ids[service]), service.name ))
+            
 
         print("Done fetching music submissions")
 
