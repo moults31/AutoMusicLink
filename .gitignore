@@ -3,6 +3,7 @@ venv/*
 src/__pycache__/*
 src/cred/AutoMusicLinker-333e1c92c852.json
 src/cred/keyfile.json
+src/debug.py
 include/subredditlist_test.xml
 include/subredditlist_2.xml
 .vscode

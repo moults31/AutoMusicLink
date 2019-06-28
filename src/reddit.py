@@ -15,9 +15,7 @@ import spotify
 
 # Return a list of reddit submission objects
 class reddit():
-    def __init__(self, services):
-        self.services = services
-
+    def __init__(self):
         self.client = praw.Reddit(client_id=os.environ['REDDIT_APP_ID'],
                             client_secret=os.environ['REDDIT_APP_SECRET'],
                             user_agent='heroku:automusiclink:v1 (by /u/moults31)',
@@ -29,9 +27,9 @@ class reddit():
 
         # dictionary with key=sub and key="title-artist" and value=(dict(key=service, value=id))
         self.tracksinsubs = dict(dict(dict()))
-        self.populate_postsinsubs()
 
-    def populate_postsinsubs(self):
+
+    def populate_postsinsubs(self, services):
         for sub in self.subredditList.findall('subreddit'):
             subreddit = self.client.subreddit(sub.find('name').text)
 
@@ -39,12 +37,12 @@ class reddit():
 
             # Keep track of which tracks we added for this sub for each service
             track_ids = dict()
-            for service in self.services:
+            for service in services:
                 track_ids[service] = list()
 
             quota_met = dict()
 
-            for service in self.services:
+            for service in services:
                 quota_met[service] = False
 
             print("Fetching 50 music submissions in r/" + sub.find('name').text)
@@ -53,7 +51,7 @@ class reddit():
             for submission in subreddit.hot(limit=None):
                 # If all streaming services have met their quotas, exit before considering this post
                 total_quotas_met = 0
-                for service in self.services:
+                for service in services:
                     if quota_met[service] == True:
                         total_quotas_met = total_quotas_met + 1
 
@@ -80,7 +78,7 @@ class reddit():
                         sys.stdout.flush()
 
                         # Find the track corresponding to this post in our services
-                        for service in self.services:
+                        for service in services:
                             # Search for the track on the given service
                             id = service.getTrackIdFromTitle(submission.title)
 
@@ -97,8 +95,17 @@ class reddit():
                                 quota_met[service] = True
             
             # Add all the tracks we found to the playlists in each service
-            for service in self.services:
-                service.user_playlist_replace_tracks(service.get_playlist_ids()[sub_name], track_ids[service])
+            for service in services:
+                print("\n")
+                print("Adding " + str(len(track_ids[service])) + " submissions to playlist " + sub_name)
+                for track_id in track_ids[service]:
+                    service.user_playlist_replace_tracks(service.get_playlist_ids()[sub_name], [track_id])
+                    time.sleep(.500)
+
+                    # Show some output for the user
+                    print('.', end='')
+                    sys.stdout.flush()
+
                 print("Added %i submissions to %s" % (len(track_ids[service]), service.name ))
             
 
@@ -133,57 +140,8 @@ class reddit():
 
         return ignorepost
 
-    def fetchMorePostsInSub(self, subname):
-            subreddit = self.client.subreddit(subname)
-            posts = []
-
-            print("Fetching 50 more submissions in r/" + subname)
-
-            print("after post id:")
-            print(self.lastpostidinsubs[subname])
-            print("with title")
-            print(self.postsinsubs[subname][self.lastpostidinsubs[subname]])
-
-            params={"after" : self.lastpostidinsubs[subname]}
-
-            # Add this entry to output list.
-            for submission in subreddit.hot(limit=50, params=params):
-                # Filter out non-music posts
-
-                # shouldIgnorePost requires ET object from input XML
-                # in order to load post flairs to be accepted or ignored
-                ignorePost = False
-                for element in self.subredditList.findall('subreddit'):
-                    if subname == element.find('name').text:
-                        ignorepost = self.shouldIgnorePost(element, submission)
-
-                if ignorepost == False:
-                    posts.append(submission)
-                    if len(posts) >= 50:
-                        print("Hit quota of 50.")
-                        break
-            
-            # formatted_posts = self.formatPostTitles(posts)
-
-            formatted_posts, trimmed_posts = self.formatPostTitles(posts)
-
-            self.postsinsubs[subname] = formatted_posts
-            self.lastpostidinsubs[subname] = trimmed_posts[-1].id
-
-            print("Found %i valid submissions" % len(formatted_posts))
-
-            # We already added to our member object, but return the list as well
-            # in case the caller has already used the member list elements from prev calls
-            return formatted_posts
-
-    def getPostsInSub(self, subname):
-        return self.postsinsubs[subname]
-
-    def getPostsInSubs(self):
-        return self.postsinsubs
-
-    def getLastPostIdInSub(self, subname):
-        return self.lastpostidinsubs[subname]
+    def getTracksInSub(self, subname):
+        return
 
     # Format the title of a single post
     def formatPostTitle(self, p):

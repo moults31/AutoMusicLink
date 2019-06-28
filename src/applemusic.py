@@ -4,6 +4,7 @@ import requests
 import webbrowser
 import time
 import json
+import datetime as dt
 from difflib import SequenceMatcher
 
 import sys
@@ -12,7 +13,7 @@ sys.path.append('src/apple-py-music')
 from applepymusic import AppleMusicClient
 
 class AppleMusic():
-    def __init__(self):
+    def __init__(self, playlist_names_to_create=None):
         print("Starting apple music...")
         self.name = "applemusic"
 
@@ -40,17 +41,37 @@ class AppleMusic():
         #           key: playlist name
         #           value: playlist id
         self.playlist_ids = {}
-        self.populate_playlist_ids()
+
+        # If a list of new playlist names wasn't specified, populate
+        if not playlist_names_to_create:
+            self.populate_existing_playlist_ids()
+
+        # Otherwise create the new playlists specified and populate their IDs in the dict
+        else:
+            self.populate_new_playlist_ids(playlist_names_to_create)
+
 
         print("Apple music started.")
 
+    def getServiceName(self):
+        return self.name
 
     def sample_code(self):
         resp = self.client.get_songs_by_isrc('US2U61726301')
         pprint.pprint(resp)
 
 
-    def populate_playlist_ids(self):
+    def populate_new_playlist_ids(self, names):
+        date = str(dt.datetime.now().date())
+
+        for name in names:
+            formatted_name = "r/" + name + "_" + date
+            resp = self.client.user_playlist_create(formatted_name)
+
+            # 0th index in resp['data'] is '[attributes]'
+            self.playlist_ids["r/" + name] = resp['data'][0]['id']
+
+    def populate_existing_playlist_ids(self):
         offset = 0
         resp = self.client.user_playlists(limit=20,offset=offset)
 
@@ -73,26 +94,30 @@ class AppleMusic():
 
     # Apple is a bad guy and has removed the capability to delete tracks ever.
     # Expose this one as replace and be ready to manually remove tracks before running any calling scripts :( wow
-    def user_playlist_replace_tracks(self, id, track_ids):       
-        self.client.user_playlist_add_tracks(id, track_ids)
+    def user_playlist_replace_tracks(self, id, track_ids):
+        try:
+            resp = self.client.user_playlist_add_tracks(id, track_ids)
+        except requests.exceptions.HTTPError as e:
+            # Report what went wrong, wait a second, and try one more time just in case.
+            print("Caught requests.exceptions.HTTPError. Retrying once.")
+            time.sleep(5)
+            resp = self.client.user_playlist_add_tracks(id, track_ids)
 
 
-    def user_playlist_add_tracks(self, id, track_ids):       
+    def user_playlist_add_tracks(self, id, track_ids):
         self.client.user_playlist_add_tracks(id, track_ids)
     
 
     def user_playlist_delete_all_tracks(self, id):
-        # Returns 403
+        # Returns 403. API endpoint discontinued.
         resp = self.user_playlist_get_all_tracks(id)
 
         for track in resp['data']:
-            pprint.pprint(track)
             self.client.user_playlist_remove_track(id, track['id'])
 
 
     def user_playlist_get_all_tracks(self, id):
         return self.client.user_playlist(id, include='tracks')
-
 
     # Searches for each title in the "titles" list param. 
     # Returns a list of ids containing all that were found.
@@ -126,9 +151,13 @@ class AppleMusic():
 
         return tracks
 
-    def getTrackIdFromTitle(self, t):        
-        tracksearch = self.client.search(query=t)
-        
+    def getTrackIdFromTitle(self, t):
+        try:
+            tracksearch = self.client.search(query=t)
+        except:
+            print("In Apple Music, failed to find track with query:")
+            print(t)
+            return ""
         try:
             items = tracksearch['results']['songs']['data']
         except KeyError:
